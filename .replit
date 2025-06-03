@@ -21,3 +21,12 @@ externalPort = 80
 
 [workflows]
 runButton = "Run"
+
+[[workflows.workflow]]
+name = "Run"
+author = 40194351
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "./start.sh"

@@ -13,6 +13,8 @@ from livekit.agents.voice import Agent, AgentSession, RunContext
 from livekit.plugins.turn_detector.english import EnglishModel
 from livekit.plugins import openai, silero, deepgram, tavus, elevenlabs, rime, turn_detector
 import asyncio
+import time
+import random
 
 load_dotenv(dotenv_path='.env')
 
@@ -149,6 +151,21 @@ class UserData:
 
         return results
 
+
+def load_model_with_retry(model_loader, max_retries=5, base_delay=1):
+    """Load a model with exponential backoff retry logic."""
+    for attempt in range(max_retries):
+        try:
+            return model_loader()
+        except Exception as e:
+            if "429" in str(e) or "rate" in str(e).lower():
+                if attempt < max_retries - 1:
+                    delay = base_delay * (2 ** attempt) + random.uniform(0, 1)
+                    logger.warning(f"Rate limited, retrying in {delay:.1f}s (attempt {attempt + 1}/{max_retries})")
+                    time.sleep(delay)
+                    continue
+            raise e
+    raise Exception(f"Failed to load model after {max_retries} attempts")
 
 class AvatarAgent(Agent):
 
@@ -441,8 +458,17 @@ async def entrypoint(ctx: JobContext):
 
     # Create a single AgentSession with userdata
     userdata = UserData(ctx=ctx)
+    
+    # Load turn detection model with retry logic
+    turn_detection_model = None
+    try:
+        turn_detection_model = load_model_with_retry(lambda: EnglishModel())
+    except Exception as e:
+        logger.warning(f"Failed to load turn detection model: {e}. Using default.")
+        turn_detection_model = EnglishModel()
+    
     session = AgentSession[UserData](userdata=userdata,
-                                     turn_detection=EnglishModel(),
+                                     turn_detection=turn_detection_model,
                                      llm=openai.LLM(model="gpt-4o-mini"),
                                      stt=deepgram.STT(model="nova-3"),
                                      tts=elevenlabs.TTS(

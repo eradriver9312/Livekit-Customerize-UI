@@ -2,19 +2,11 @@
 #!/bin/bash
 set -e
 
-# Download required models first
-echo "Downloading required models..."
-python tavus.py download-files || echo "Model download failed, continuing..."
-
-# Start the Python backend in the background
+# Start the Python backend in the background without downloading models
 echo "Starting Python backend..."
 python tavus.py dev &
 BACKEND_PID=$!
 
-# Wait longer for the backend to initialize
-echo "Waiting for backend to initialize..."
-sleep 10
-
-# Start the Next.js frontend
+# Start the Next.js frontend immediately
 echo "Starting Next.js frontend..."
 npm run dev
