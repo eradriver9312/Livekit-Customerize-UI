@@ -70,22 +70,6 @@ function SimpleVoiceAssistant(props: { onConnectButtonClicked: () => void }) {
 
   const handleCameraToggle = async (enabled: boolean) => {
     setCameraEnabled(enabled);
-    // Call the backend to toggle camera
-    try {
-      const response = await fetch('/api/toggle-camera', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ enabled }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to toggle camera');
-      }
-    } catch (error) {
-      console.error('Error toggling camera:', error);
-      setCameraEnabled(!enabled); // Revert state on error
-    }
   };
 
   return (

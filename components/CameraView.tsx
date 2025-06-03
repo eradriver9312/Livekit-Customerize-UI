@@ -15,7 +15,9 @@ export const CameraView: React.FC<CameraViewProps> = ({ room, onCameraToggle }) 
   const toggleCamera = async () => {
     try {
       setError(null);
-      if (!isCameraEnabled) {
+      const newState = !isCameraEnabled;
+      
+      if (newState) {
         const track = await createLocalVideoTrack({
           facingMode: 'user',
           resolution: { width: 640, height: 480 }
@@ -29,11 +31,12 @@ export const CameraView: React.FC<CameraViewProps> = ({ room, onCameraToggle }) 
         if (localTrack) {
           await room.localParticipant.unpublishTrack(localTrack);
           localTrack.detach();
+          await localTrack.stop();
           setLocalTrack(null);
         }
       }
-      setIsCameraEnabled(!isCameraEnabled);
-      onCameraToggle(!isCameraEnabled);
+      setIsCameraEnabled(newState);
+      onCameraToggle(newState);
     } catch (error) {
       console.error('Error toggling camera:', error);
       setError('Could not access camera. Please check your camera permissions and try again.');
