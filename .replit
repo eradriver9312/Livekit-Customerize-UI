@@ -3,6 +3,7 @@ modules = ["nodejs-20", "python-3.11"]
 
 [nix]
 channel = "stable-24_05"
+packages = ["ffmpeg-full", "glibcLocales", "libxcrypt"]
 
 [unitTest]
 language = "python3"
@@ -11,12 +12,24 @@ language = "python3"
 requiredFiles = [".replit", "replit.nix"]
 
 [deployment]
-run = ["python3", "main.py"]
+run = ["sh", "-c", "./start.sh"]
 deploymentTarget = "cloudrun"
 
 [[ports]]
 localPort = 3000
 externalPort = 3001
+
+[[ports]]
+localPort = 33769
+externalPort = 4200
+
+[[ports]]
+localPort = 34489
+externalPort = 80
+
+[[ports]]
+localPort = 41751
+externalPort = 3003
 
 [[ports]]
 localPort = 44069

@@ -10,11 +10,16 @@ export const CameraView: React.FC<CameraViewProps> = ({ room, onCameraToggle }) 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
   const [localTrack, setLocalTrack] = useState<LocalVideoTrack | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const toggleCamera = async () => {
     try {
+      setError(null);
       if (!isCameraEnabled) {
-        const track = await createLocalVideoTrack();
+        const track = await createLocalVideoTrack({
+          facingMode: 'user',
+          resolution: { width: 640, height: 480 }
+        });
         await room.localParticipant.publishTrack(track);
         setLocalTrack(track);
         if (videoRef.current) {
@@ -31,6 +36,9 @@ export const CameraView: React.FC<CameraViewProps> = ({ room, onCameraToggle }) 
       onCameraToggle(!isCameraEnabled);
     } catch (error) {
       console.error('Error toggling camera:', error);
+      setError('Could not access camera. Please check your camera permissions and try again.');
+      setIsCameraEnabled(false);
+      onCameraToggle(false);
     }
   };
 
@@ -59,6 +67,9 @@ export const CameraView: React.FC<CameraViewProps> = ({ room, onCameraToggle }) 
           </div>
         )}
       </div>
+      {error && (
+        <p className="mt-2 text-red-500 text-sm">{error}</p>
+      )}
       <button
         onClick={toggleCamera}
         className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
