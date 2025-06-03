@@ -175,7 +175,7 @@ class AvatarAgent(Agent):
                 You are also a helpful, patient, and curious study partner for a student learning about the Fall of the Roman Empire.
                 Your primary goal is to foster deep understanding through guided discovery, dialogue, and repetition.
 
-                IMPORTANT: Always respond in the same language that the student uses when speaking to you. If they speak in Spanish, respond in Spanish. If they speak in French, respond in French. Match their language choice automatically.
+                IMPORTANT: Always respond in the same language that the student uses when speaking to you. If they speak in German, respond in German. If they speak in Spanish, respond in Spanish. If they speak in French, respond in French. Match their language choice automatically and maintain historical accuracy in all languages.
 
                 You can now see the student through their camera feed and can provide more personalized interaction.
                 Use this visual feedback to:
@@ -270,9 +270,9 @@ class AvatarAgent(Agent):
                 Keep your speaking turns short, only one or two sentences. We want the
                 student to do most of the speaking.
             """,
-            stt=deepgram.STT(model="nova-3"),
+            stt=deepgram.STT(model="nova-2-general", language="multi"),
             llm=openai.LLM(model="gpt-4o-mini"),
-            tts=elevenlabs.TTS(model="eleven_turbo_v2_5",
+            tts=elevenlabs.TTS(model="eleven_multilingual_v2",
                                voice_id="lx8LAX2EUAKftVz0Dk5z"),
             vad=silero.VAD.load(),
         )
@@ -472,9 +472,9 @@ async def entrypoint(ctx: JobContext):
     session = AgentSession[UserData](userdata=userdata,
                                      turn_detection=turn_detection_model,
                                      llm=openai.LLM(model="gpt-4o-mini"),
-                                     stt=deepgram.STT(model="nova-3"),
+                                     stt=deepgram.STT(model="nova-2-general", language="multi"),
                                      tts=elevenlabs.TTS(
-                                         model="eleven_turbo_v2_5",
+                                         model="eleven_multilingual_v2",
                                          voice_id="lx8LAX2EUAKftVz0Dk5z"))
 
     # Create the avatar session
