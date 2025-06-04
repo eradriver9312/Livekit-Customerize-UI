@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Room, LocalVideoTrack, createLocalVideoTrack } from 'livekit-client';
 
@@ -55,8 +56,8 @@ export const CameraView: React.FC<CameraViewProps> = ({ room, onCameraToggle }) 
   }, [localTrack, room]);
 
   return (
-    <div className="relative w-full max-w-md mx-auto">
-      <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden">
+    <div className="relative w-full h-full flex flex-col">
+      <div className="relative flex-1 bg-gray-900 rounded-lg overflow-hidden min-h-[200px] md:min-h-[300px]">
         <video
           ref={videoRef}
           className="w-full h-full object-cover"
@@ -65,20 +66,34 @@ export const CameraView: React.FC<CameraViewProps> = ({ room, onCameraToggle }) 
           muted
         />
         {!isCameraEnabled && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75">
-            <p className="text-white text-lg">Camera is off</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 bg-opacity-90">
+            <div className="text-center">
+              <p className="text-white text-sm md:text-lg mb-4">Camera is off</p>
+              <button
+                onClick={toggleCamera}
+                className="px-4 py-2 md:px-6 md:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm md:text-base font-medium"
+              >
+                Turn On Camera
+              </button>
+            </div>
+          </div>
+        )}
+        {isCameraEnabled && (
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+            <button
+              onClick={toggleCamera}
+              className="px-4 py-2 md:px-6 md:py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm md:text-base font-medium shadow-lg"
+            >
+              Turn Off Camera
+            </button>
           </div>
         )}
       </div>
       {error && (
-        <p className="mt-2 text-red-500 text-sm">{error}</p>
+        <div className="mt-2 p-2 bg-red-100 border border-red-300 rounded text-red-700 text-xs md:text-sm">
+          {error}
+        </div>
       )}
-      <button
-        onClick={toggleCamera}
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        {isCameraEnabled ? 'Turn Off Camera' : 'Turn On Camera'}
-      </button>
     </div>
   );
 };
